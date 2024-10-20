@@ -1,13 +1,9 @@
 <template>
   <div class="admin">
     <h1>Administración de Cursos</h1>
-    <button @click="mostrarModal = true">Agregar Curso</button>
-    <br>
-    <br>
-    <br>
+    <button @click="mostrarModal = true" class="btn-agregar">Agregar Curso</button>
 
-    <!-- Mostrar tabla con los cursos -->
-    <table>
+    <table class="tabla-cursos">
       <thead>
         <tr>
           <th>Nombre</th>
@@ -27,17 +23,16 @@
           <td>{{ curso.cupos }}</td>
           <td>{{ curso.duracion }}</td>
           <td>{{ curso.costo }}</td>
-          <td>{{ curso.completado }} </td>
-          <td>{{ curso.fecha_registro }} </td>
+          <td>{{ curso.completado ? 'Sí' : 'No' }}</td>
+          <td>{{ curso.fecha_registro }}</td>
           <td>
-            <button @click="eliminarCurso(curso.id)">Eliminar</button>
-            <button @click="editarCurso(curso)">Editar</button>
+            <button @click="eliminarCurso(curso.id)" class="btn-eliminar">Eliminar</button>
+            <button @click="editarCurso(curso)" class="btn-editar">Editar</button>
           </td>
         </tr>
       </tbody>
     </table>
 
-    <!-- Estadísticas de los cursos -->
     <div class="stats">
       <div class="stat-box">
         <h3>Total de Cupos</h3>
@@ -65,80 +60,78 @@
       </div>
     </div>
 
-    <!-- Modal para agregar cursos -->
     <div v-if="mostrarModal" class="modal">
-      <div class="modal-content">
+      <div class="contenido-modal">
         <h2>Agregar Nuevo Curso</h2>
-        <form @submit.prevent="agregarNuevoCurso" class="form-modal">
-          <!-- Nombre del curso -->
+        <form @submit.prevent="agregarNuevoCurso" class="formulario-modal">
           <label for="nombre">Nombre:</label>
           <input v-model="nuevoCurso.nombre" id="nombre" type="text" placeholder="Nombre del curso" />
+          <p v-if="errores.nombre" class="error">{{ errores.nombre }}</p>
 
-          <!-- Imagen del curso -->
           <label for="img">Imagen (URL):</label>
           <input v-model="nuevoCurso.img" id="img" type="text" placeholder="URL de la imagen" />
+          <p v-if="errores.img" class="error">{{ errores.img }}</p>
 
-          <!-- Cupos del curso -->
           <label for="cupos">Cupos:</label>
           <input v-model="nuevoCurso.cupos" id="cupos" type="number" placeholder="Cupos disponibles" />
+          <p v-if="errores.cupos" class="error">{{ errores.cupos }}</p>
 
-          <!-- Inscritos en el curso -->
           <label for="inscritos">Inscritos:</label>
           <input v-model="nuevoCurso.inscritos" id="inscritos" type="number" placeholder="Número de inscritos" />
+          <p v-if="errores.inscritos" class="error">{{ errores.inscritos }}</p>
 
-          <!-- Costo del curso -->
           <label for="costo">Costo:</label>
           <input v-model="nuevoCurso.costo" id="costo" type="number" placeholder="Costo del curso" />
+          <p v-if="errores.costo" class="error">{{ errores.costo }}</p>
 
-          <!-- Descripción del curso -->
           <label for="descripcion">Descripción:</label>
           <textarea v-model="nuevoCurso.descripcion" id="descripcion" placeholder="Descripción del curso"></textarea>
+          <p v-if="errores.descripcion" class="error">{{ errores.descripcion }}</p>
 
-          <!-- Duración del curso -->
           <label for="duracion">Duración:</label>
           <input v-model="nuevoCurso.duracion" id="duracion" type="text" placeholder="Duración del curso" />
+          <p v-if="errores.duracion" class="error">{{ errores.duracion }}</p>
 
-          <!-- Fecha de registro (automática) -->
           <label for="fecha_registro">Fecha de registro:</label>
           <input v-model="nuevoCurso.fecha_registro" id="fecha_registro" type="text" disabled />
 
-          <!-- Botones para agregar o cancelar -->
-          <button type="submit">Agregar Curso</button>
-          <button @click="mostrarModal = false">Cancelar</button>
+          <button type="submit" class="btn-agregar-modal">Agregar Curso</button>
+          <button @click="mostrarModal = false" class="btn-cancelar-modal">Cancelar</button>
         </form>
       </div>
     </div>
+
     <div v-if="mostrarModalEditar" class="modal">
-      <div class="modal-content">
+      <div class="contenido-modal">
         <h2>Editar Curso: {{ cursoSeleccionado.nombre }}</h2>
-        <form @submit.prevent="guardarCambiosCurso" class="form-modal">
-          <!-- Nombre del curso -->
+        <form @submit.prevent="guardarCambiosCurso" class="formulario-modal">
           <label for="nombre">Nombre:</label>
           <input v-model="cursoSeleccionado.nombre" id="nombre" type="text" />
+          <p v-if="errores.nombre" class="error">{{ errores.nombre }}</p>
 
-          <!-- Imagen del curso -->
           <label for="img">Imagen (URL):</label>
           <input v-model="cursoSeleccionado.img" id="img" type="text" placeholder="URL de la imagen" />
+          <p v-if="errores.img" class="error">{{ errores.img }}</p>
 
-          <!-- Costo del curso -->
           <label for="costo">Costo:</label>
           <input v-model="cursoSeleccionado.costo" id="costo" type="number" />
+          <p v-if="errores.costo" class="error">{{ errores.costo }}</p>
 
-          <!-- Duración del curso -->
           <label for="duracion">Duración:</label>
           <input v-model="cursoSeleccionado.duracion" id="duracion" type="text" />
+          <p v-if="errores.duracion" class="error">{{ errores.duracion }}</p>
 
-          <!-- Cupos del curso -->
           <label for="cupos">Cupos:</label>
           <input v-model="cursoSeleccionado.cupos" id="cupos" type="number" />
+          <p v-if="errores.cupos" class="error">{{ errores.cupos }}</p>
 
-          <!-- Inscritos en el curso -->
           <label for="inscritos">Inscritos:</label>
           <input v-model="cursoSeleccionado.inscritos" id="inscritos" type="number" />
+          <p v-if="errores.inscritos" class="error">{{ errores.inscritos }}</p>
 
-          <!-- Descripción del curso -->
           <label for="descripcion">Descripción:</label>
           <textarea v-model="cursoSeleccionado.descripcion" id="descripcion"></textarea>
+          <p v-if="errores.descripcion" class="error">{{ errores.descripcion }}</p>
 
           <label for="completado">Terminado:</label>
           <textarea v-model="cursoSeleccionado.completado" id="completado"></textarea>
@@ -146,12 +139,11 @@
           <label for="fecha">Fecha:</label>
           <textarea v-model="cursoSeleccionado.fecha_registro" id="fecha"></textarea>
 
-          <!-- Botones para guardar o cancelar -->
-          <button type="submit">Guardar Cambios</button>
-          <button @click="cerrarModalEditar">Cancelar</button>
+          <button type="submit" class="btn-guardar-modal">Guardar Cambios</button>
+          <button @click="cerrarModalEditar" class="btn-cancelar-modal">Cancelar</button>
         </form>
       </div>
-      </div>
+    </div>
   </div>
 </template>
 
@@ -181,7 +173,7 @@ export default {
         descripcion: '',
         duracion: ''
       },
-      cursoSeleccionado: null, // Para almacenar el curso que se está editando
+      cursoSeleccionado: null,
     };
   },
 
@@ -210,7 +202,6 @@ export default {
   },
   methods: {
     agregarNuevoCurso() {
-      // Resetear errores
       this.errores = {
         nombre: '',
         img: '',
@@ -262,15 +253,10 @@ export default {
         return;
       }
 
-      // Estado del curso (por defecto será false) y la fecha de registro ya están seteados
-
-      // Dispatch al store para agregar el curso
       this.$store.dispatch('agregarCurso', { ...this.nuevoCurso, id: Date.now() });
 
-      // Cerrar el modal
       this.mostrarModal = false;
 
-      // Limpiar campos
       this.nuevoCurso = {
         nombre: '',
         img: '',
@@ -288,8 +274,8 @@ export default {
       this.$store.dispatch('eliminarCurso', cursoId);
     },
     editarCurso(curso) {
-      this.cursoSeleccionado = { ...curso }; // Clonar el curso seleccionado
-      this.mostrarModalEditar = true; // Mostrar el modal de edición
+      this.cursoSeleccionado = { ...curso };
+      this.mostrarModalEditar = true;
     },
     guardarCambiosCurso() {
       if (this.cursoSeleccionado.inscritos > this.cursoSeleccionado.cupos) {
@@ -301,13 +287,82 @@ export default {
     },
     cerrarModalEditar() {
       this.mostrarModalEditar = false;
-      this.cursoSeleccionado = null; // Resetear la selección
+      this.cursoSeleccionado = null;
     }
   }
 };
 </script>
 
 <style scoped>
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #f4f4f4;
+  color: #333;
+  margin: 0;
+  padding: 0;
+}
+
+.admin {
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  text-align: center;
+  color: #4CAF50;
+}
+
+.btn-agregar, .btn-editar, .btn-eliminar {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 15px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.btn-agregar:hover, .btn-editar:hover, .btn-eliminar:hover {
+  background-color: #45a049;
+}
+
+.tabla-cursos {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+}
+
+.tabla-cursos th, .tabla-cursos td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: left;
+}
+
+.tabla-cursos th {
+  background-color: #f2f2f2;
+  color: #333;
+}
+
+.estadisticas {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin: 20px 0;
+}
+
+.caja-estadistica {
+  background: #e7f4e4;
+  border-radius: 8px;
+  padding: 15px;
+  flex: 1 1 30%;
+  margin: 10px;
+  text-align: center;
+}
+
 .modal {
   position: fixed;
   top: 0;
@@ -317,34 +372,33 @@ export default {
   background: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
-  align-items: flex-start;
-  padding-top: 50px;
-  padding-bottom: 50px;
-  overflow-y: auto;
+  align-items: center;
+  z-index: 1000;
 }
 
-.modal-content {
+.contenido-modal {
   background: white;
   padding: 20px;
-  border-radius: 4px;
-  width: 80%;
+  border-radius: 8px;
+  width: 90%;
   max-width: 600px;
-  min-height: 70vh;
-  max-height: 90vh;
+  min-height: 400px;
+  max-height: 80vh;
   overflow-y: auto;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
-.form-modal {
+.formulario-modal {
   display: flex;
   flex-direction: column;
 }
 
-.form-modal label {
+.formulario-modal label {
   margin-top: 10px;
 }
 
-.form-modal input,
-.form-modal textarea {
+.formulario-modal input,
+.formulario-modal textarea {
   margin-bottom: 15px;
   padding: 8px;
   font-size: 16px;
@@ -352,60 +406,71 @@ export default {
   border-radius: 4px;
 }
 
-.form-modal textarea {
-  resize: vertical; /* Permitir que el textarea sea ajustable en altura */
-}
-
-.form-modal button {
-  margin-top: 20px;
+.btn-guardar-modal,
+.btn-agregar-modal,
+.btn-cancelar-modal {
   padding: 10px 15px;
   font-size: 16px;
-  background-color: #007bff;
-  color: white;
+  cursor: pointer;
   border: none;
   border-radius: 4px;
-  cursor: pointer;
 }
 
-.form-modal button:last-child {
-  background-color: #dc3545; /* Botón de cancelar */
+.btn-guardar-modal, .btn-agregar-modal {
+  background-color: #007bff;
+  color: white;
 }
 
-table {
-  margin: auto;
-  border-collapse: collapse; /* Asegúrate de que las celdas no se colapsen, por si luego agregas bordes */
+.btn-cancelar-modal {
+  background-color: #dc3545;
+  color: white;
 }
 
-td, th {
-  padding: 10px 20px; /* Ajusta el valor según necesites más o menos espacio */
+.btn-guardar-modal:hover,
+.btn-agregar-modal:hover,
+.btn-cancelar-modal:hover {
+  opacity: 0.9;
 }
 
 .stats {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-around;
-  margin-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .stat-box {
-  background-color: #f5f5f5;
-  border-radius: 10px;
-  padding: 20px;
-  width: 180px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
   text-align: center;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+}
+
+.stat-box:hover {
+  transform: translateY(-5px);
 }
 
 .stat-box h3 {
-  margin-bottom: 10px;
-  font-size: 18px;
+  margin: 0 0 10px;
+  font-size: 1.2em;
+  color: #333;
 }
 
 .stat-box p {
-  font-size: 24px;
+  font-size: 1.5em;
+  color: #4CAF50;
   font-weight: bold;
-  margin: 0;
 }
 
+.error {
+  color: red;
+  font-size: 12px;
+  margin-top: -10px;
+  margin-bottom: 10px;
+}
 </style>

@@ -1,55 +1,42 @@
 <template>
-  <div class="home">
-    <h1>Listado de Cursos</h1>
-    <div class="courses">
-      <div class="course-card" v-for="curso in cursos" :key="curso.id">
-        <img class="course-img" :src="curso.img" alt="Imagen del curso" />
-        <h2>{{ curso.nombre }}</h2>
-        <p>Costo: {{ curso.costo }}</p>
-        <p>Duración: {{ curso.duracion }}</p>
-        <p>Cupos: {{ curso.cupos }} </p>
-        <p>Completado: {{curso.completado }} </p>
-        <p>Fecha de Registro: {{curso.fecha_registro }} </p>
-        <p>{{ curso.descripcion }}</p>
-      </div>
+  <div class="pagina-cursos">
+    <h1 class="titulo-cursos">Listado de Cursos</h1>
+    <div class="contenedor-cursos">
+      <CursoCard v-for="curso in cursos" :key="curso.id" :curso="curso" />
     </div>
   </div>
 </template>
 
 <script>
-
+import CursoCard from '@/components/CursoCard.vue'; // Ajusta la ruta si es necesario
 
 export default {
   name: 'HomeView',
   components: {
-
+    CursoCard
   },
   computed: {
-    cursos(){
+    cursos() {
       return this.$store.state.cursos;
     }
   }
 }
 </script>
 
-
 <style scoped>
-.courses {
+.pagina-cursos {
+  text-align: center;
+  padding: 20px;
+}
+
+.titulo-cursos {
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+.contenedor-cursos {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-}
-
-.course-card {
-  border: 1px solid #ddd;
-  padding: 16px;
-  margin: 10px;
-  max-width: 300px;
-  text-align: center;
-}
-
-.course-img{
-  max-width: 140px;
-  max-height: 140px;
 }
 </style>
